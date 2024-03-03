@@ -3,6 +3,8 @@ import { info, warn, error } from 'okayulogger';
 import { Vox } from './vox';
 import { I_BEAT_INFO, I_BPM_INFO } from './datatypes';
 import { CountBPMPauseBeats } from './bpmutil';
+import { BT_NOTE_TYPE, BT_Note } from './note';
+import { ConvertToOsuChart } from './convert_osu';
 
 let CURRENT_FILE_PATH: string = process.argv[2];
 
@@ -16,6 +18,7 @@ if (!existsSync(CURRENT_FILE_PATH)) {
 const DummyTimeSig = {Location:{Measure:0,Beat:0,Offset:0},Numerator:4,Denominator:4};
 
 let vox: Vox = new Vox(CURRENT_FILE_PATH);
+if (vox.VOX_VERSION < 10) process.exit();
 
 /*
 	BPM INFO Reading test
@@ -45,3 +48,12 @@ const TimeSignatures: Array<I_BEAT_INFO> = vox.GetTimeSignatures();
 TimeSignatures.forEach((TimeSig: I_BEAT_INFO) => {
 	info('main', `There is a time signature at Measure ${TimeSig.Location.Measure}, Beat ${TimeSig.Location.Beat}, with ${TimeSig.Location.Offset} offset which sets the time signature to ${TimeSig.Numerator}/${TimeSig.Denominator}`);
 });
+
+/*
+	Convert BT-A -> BT-D to osu! 4K format
+*/
+
+// get all BT-As
+const BT_A: Array<BT_Note> = vox.GetBTTrackNotes(BT_NOTE_TYPE.BT_A);
+
+ConvertToOsuChart(BT_A, BT_A, BT_A, BT_A, BPMs, TimeSignatures);

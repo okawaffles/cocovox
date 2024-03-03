@@ -35,5 +35,16 @@
                 
             ]
         }
+    },
+    "osuconverter":{
+        "signature":"osu file format v14",
+        "sections":{
+            "GENERAL":"[General]",
+            "METADATA":"[Metadata]",
+            "OBJECTS":"[HitObjects]"
+        },
+        "metadata":{
+            "TITLE":"Title:"
+        }
     }
 }

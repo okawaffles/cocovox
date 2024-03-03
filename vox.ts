@@ -1,4 +1,4 @@
-import { Note, BT_States, VOL_States } from "./note";
+import { BT_States, VOL_States, BT_Note, VOL_Note, BT_NOTE_TYPE } from "./note";
 import { info, warn, error } from 'okayulogger';
 import { readFileSync } from "fs";
 import { I_BEAT_INFO, I_BPM_INFO, I_SONG_LOCATION } from "./datatypes";
@@ -40,8 +40,7 @@ export class Vox {
     protected FILE_PATH: string;
     protected CHART_TIMESIG_NUM: number = 4; // numerator
     protected CHART_TIMESIG_DEN: number = 4; // denominator
-    public CHART_NOTES: Array<Note> = [];
-    protected VOX_VERSION: number = 0;
+    public VOX_VERSION: number = 0;
     protected FILE_LINES: Array<string> = [];
     public MARKERS: MarkerLocations = {
         VERSION: 0
@@ -59,6 +58,9 @@ export class Vox {
         // load the file and split it line-by-line
         const FILE = readFileSync(filePath, 'utf-8');
         this.FILE_LINES = FILE.split('\r\n');
+        // make sure that it actually split correctly. some files might use \r\n while others use just \n
+        if (this.FILE_LINES.length < 3)
+            this.FILE_LINES = FILE.split('\n');
 
         // get the version
         this.VOX_VERSION = this.ReadVoxVersion();
@@ -79,7 +81,7 @@ export class Vox {
      */
     private ReadVoxVersion(): number {
         try {
-            let line = this.FILE_LINES.indexOf(metaSearchStrings.VERSION);
+            let line = this.FILE_LINES.indexOf("#FORMAT VERSION");
             
             if (line == -1) 
                 throw new Error('Could not find version marker');
@@ -207,5 +209,67 @@ export class Vox {
         });
 
         return Beat_Array;
+    }
+
+    /**
+     * Gets all notes from a certain track in the .vox file.
+     * @param trackId the track marker to start from
+     */
+    public GetBTTrackNotes(trackId: BT_NOTE_TYPE): Array<BT_Note> {
+        const TICKS_PER_BEAT = 48; // ticks per beat in 4/4 time
+
+        // this allows us to easily get the track marker line
+        // based on the enum the user entered
+        const trackList: Array<number | undefined> = [
+            this.TRACKS.BT_A,
+            this.TRACKS.BT_B,
+            this.TRACKS.BT_C,
+            this.TRACKS.BT_D,
+            this.TRACKS.FX_L,
+            this.TRACKS.FX_R 
+        ];
+
+        const marker: number = <number> trackList[trackId];
+
+        const notes: Array<BT_Note> = [];
+        const raw_lines = this.GetRawDataAtMarker(marker);
+        
+        raw_lines.forEach((line: string) => {
+            const line_parts: Array<string> = line.split('<TAB>');
+
+            // first part is location
+            const mbo: Array<string> = line_parts[0].split(',');
+            const loc: I_SONG_LOCATION = {
+               Measure: parseInt(mbo[0]),
+               Beat: parseInt(mbo[1]),
+               Offset: parseInt(mbo[2])
+            }
+
+            // the other 2 define the note's behavior
+            const param_a: number = parseInt(line_parts[1]);
+            const param_b: number = parseInt(line_parts[2]);
+
+            // 0 0 == BT CHIP
+            if (param_a == 0 && param_b == 0) {
+                const note: BT_Note = {
+                    Location: loc,
+                    Type: trackId,
+                    State: BT_States.BT_STATE_CHIP
+                }
+                notes.push(note);
+            } else {
+                // nonzeros mean its a HOLD note
+                const beats = param_a / TICKS_PER_BEAT;
+                const note: BT_Note = {
+                    Location: loc,
+                    Type: trackId,
+                    State: BT_States.BT_STATE_HOLD,
+                    HoldBeats: beats
+                }
+                notes.push(note);
+            }
+        });
+
+        return notes;
     }
 }

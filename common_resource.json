@@ -1,0 +1,39 @@
+{
+    "system":{
+        "fileformat":{
+            "common":{
+                "LINE":"//====================================",
+                "SIGNATURE":"// SOUND VOLTEX OUTPUT TEXT FILE",
+                "TRACK_INFO":"// TRACK INFO",
+                "SPCONTROLLER_INFO":"// SPCONTROLER INFO"
+            },
+            "search_meta":{
+                "COMMON_END":"#END",
+                "VERSION":"#FORMAT VERSION",
+                "BEAT":"#BEAT INFO",
+                "BPM":"#BPM INFO",
+                "TILT_MODE":"#TILT MODE INFO",
+                "END_POSITION":"#END POSITION INFO",
+                "TAB_EFFECT":"#TAB EFFECT INFO",
+                "FXBUTTON_EFFECT":"#FXBUTTON EFFECT INFO",
+                "TAB_PARAM_ASSIGN":"#TAB PARAM ASSIGN INFO",
+                "REVERB_EFFECT_PARAM":"#REVERB EFFECT PARAM",
+                "TRACK_AUTO_TAB":"#TRACK AUTO TAB",
+                "SPCONTROLLER":"#SPCONTROLLER"
+            },
+            "search_track":{
+                "BT_A":"#TRACK2",
+                "BT_B":"#TRACK3",
+                "BT_C":"#TRACK4",
+                "BT_D":"#TRACK5",
+                "FX_L":"#TRACK6",
+                "FX_R":"#TRACK7",
+                "VOL_L":"#TRACK1",
+                "VOL_R":"#TRACK8"
+            },
+            "fx_match":[
+                
+            ]
+        }
+    }
+}

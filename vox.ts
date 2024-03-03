@@ -1,7 +1,7 @@
 import { Note, BT_States, VOL_States } from "./note";
 import { info, warn, error } from 'okayulogger';
 import { readFileSync } from "fs";
-import { I_BPM_INFO, I_SONG_LOCATION } from "./datatypes";
+import { I_BEAT_INFO, I_BPM_INFO, I_SONG_LOCATION } from "./datatypes";
 
 const resources = require('../common_resource.json');
 const metaSearchStrings = resources.system.fileformat.search_meta;
@@ -174,7 +174,38 @@ export class Vox {
     }
 
 
-    public GetTimeSignatures() {
+    /**
+     * Gets all time signatures from the .vox file
+     * @returns Array of I_BEAT_INFO
+     */
+    public GetTimeSignatures(): Array<I_BEAT_INFO> {
+        const Beat_Array: Array<I_BEAT_INFO> = [];
+        // get the raw data for the time signature marker
+        const raw_lines = this.GetRawDataAtMarker(<number> this.MARKERS.BEAT_INFO);
 
+        raw_lines.forEach((line: string) => {
+            // split up the parts
+            const line_parts = line.split('<TAB>');
+
+            // first part is location
+            const mbo = line_parts[0].split(',');
+            const location: I_SONG_LOCATION = {
+                Measure: parseInt(mbo[0]),
+                Beat: parseInt(mbo[1]),
+                Offset: parseInt(mbo[2])
+            }
+
+            // second and third part are numerator and denominator
+            const timesig: I_BEAT_INFO = {
+                Location: location,
+                Numerator: parseInt(line_parts[1]),
+                Denominator: parseInt(line_parts[2])
+            }
+
+            // push and repeat
+            Beat_Array.push(timesig);
+        });
+
+        return Beat_Array;
     }
 }

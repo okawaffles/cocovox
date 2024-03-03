@@ -13,5 +13,5 @@ export interface I_BPM_INFO {
 export interface I_BEAT_INFO {
     Location: I_SONG_LOCATION,
     Numerator: number,
-    denominator: number
+    Denominator: number
 }

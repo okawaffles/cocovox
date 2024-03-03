@@ -3,7 +3,7 @@ import { info, warn, error } from 'okayulogger';
 import { readFileSync } from "fs";
 import { I_BPM_INFO, I_SONG_LOCATION } from "./datatypes";
 
-const resources = require('./common_resource.json');
+const resources = require('../common_resource.json');
 const metaSearchStrings = resources.system.fileformat.search_meta;
 const trackSearchStrings = resources.system.fileformat.search_track;
 
@@ -175,6 +175,6 @@ export class Vox {
 
 
     public GetTimeSignatures() {
-        
+
     }
 }

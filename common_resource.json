@@ -22,11 +22,11 @@
                 "SPCONTROLLER":"#SPCONTROLLER"
             },
             "search_track":{
-                "BT_A":"#TRACK2",
-                "BT_B":"#TRACK3",
-                "BT_C":"#TRACK4",
-                "BT_D":"#TRACK5",
-                "FX_L":"#TRACK6",
+                "BT_A":"#TRACK3",
+                "BT_B":"#TRACK4",
+                "BT_C":"#TRACK5",
+                "BT_D":"#TRACK6",
+                "FX_L":"#TRACK2",
                 "FX_R":"#TRACK7",
                 "VOL_L":"#TRACK1",
                 "VOL_R":"#TRACK8"

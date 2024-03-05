@@ -55,5 +55,8 @@ TimeSignatures.forEach((TimeSig: I_BEAT_INFO) => {
 
 // get all BT-As
 const BT_A: Array<BT_Note> = vox.GetBTTrackNotes(BT_NOTE_TYPE.BT_A);
+const BT_B: Array<BT_Note> = vox.GetBTTrackNotes(BT_NOTE_TYPE.BT_B);
+const BT_C: Array<BT_Note> = vox.GetBTTrackNotes(BT_NOTE_TYPE.BT_C);
+const BT_D: Array<BT_Note> = vox.GetBTTrackNotes(BT_NOTE_TYPE.BT_D);
 
-ConvertToOsuChart(BT_A, BT_A, BT_A, BT_A, BPMs, TimeSignatures);
+ConvertToOsuChart(BT_A, BT_B, BT_C, BT_D, BPMs, TimeSignatures);

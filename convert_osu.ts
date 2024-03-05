@@ -30,7 +30,7 @@ function ConvertVOXLocationToMS(location: I_SONG_LOCATION, bpm: I_BPM_INFO, time
 
     const MSFromOffset: number = (MSPerBeat / TICKS_PER_BEAT) * location.Offset;
 
-    const MS: number = MSFromMeasures + MSFromBeats + MSFromOffset - (MSPerBeat*5); // 5 measures off for some reason?!
+    const MS: number = MSFromMeasures + MSFromBeats + MSFromOffset - (MSPerBeat * 5); //  5 measures off for some reason?!
     return MS;
 }
 
@@ -67,7 +67,9 @@ export function ConvertToOsuChart(track_bt_a: Array<BT_Note>, track_bt_b: Array<
         TimingPoints.push(`0,${60000/BPMs[0].BPM},4,2,0,100,1,0\n`);
     } else {
         BPMs.forEach((BPM: I_BPM_INFO) => {
-            const time = ConvertVOXLocationToMS(BPM.Location, BPM, timesigs[0]);
+            // why in gods name does the game work like this? what the actual fuck?
+            let time = ConvertVOXLocationToMS(BPM.Location, BPMs[0], timesigs[0]);
+
             TimingPoints.push(`${time},${60000/BPM.BPM},4,2,0,100,1,0`);
         });
     }
@@ -130,25 +132,27 @@ export function ConvertToOsuChart(track_bt_a: Array<BT_Note>, track_bt_b: Array<
             //ex hold: 64,192,1630,128,2,2446:0:0:0:0:
             //ex chip: 448,192,1630,1,4,0:0:0:0:
 
-            console.log(`note ${object_count} with bpm ${CurrentBPM.BPM}`);
+            //console.log(`note ${object_count} with bpm ${CurrentBPM.BPM}`);
 
             // ez chip notes:
             if (note.State == BT_States.BT_STATE_CHIP) {
+                let time: number = ConvertVOXLocationToMS(note.Location, CurrentBPM, timesigs[0]);
                 notes.push(<osumania_chip> {
                     x: LANES_4K[tracks.indexOf(track)],
                     y: DEFAULT_Y,
-                    time: ConvertVOXLocationToMS(note.Location, CurrentBPM, timesigs[0]),
+                    time: time,
                     someParamA: 1,
                     someParamB: 0
                 });
             } else {
                 // long note
-                const MSPerBeat: number = 60000 / CurrentBPM.BPM;
-                const endTime: number = (<number> note.HoldBeats) * MSPerBeat;
+                const MSPerBeat: number = 60000 / BPMs[0].BPM;
+                const time = ConvertVOXLocationToMS(note.Location, CurrentBPM, timesigs[0]);
+                const endTime: number = time + ((<number> note.HoldBeats) * MSPerBeat);
                 notes.push(<osumania_long> {
                     x: LANES_4K[tracks.indexOf(track)],
                     y: DEFAULT_Y,
-                    time: ConvertVOXLocationToMS(note.Location, CurrentBPM, timesigs[0]),
+                    time: time,
                     endTime: endTime,
                     someParamA: 1,
                     someParamB: 0
@@ -160,15 +164,20 @@ export function ConvertToOsuChart(track_bt_a: Array<BT_Note>, track_bt_b: Array<
     // sort all the notes by time
     notes.sort(SortByMS);
 
+    let long = 0;
+    let chip = 0;
+
     notes.forEach((note) => {
         let convertedLine: string;
 
-        if (note.endTime != 'undefined') {
+        if (note.endTime > 0) {
             // is a long
             convertedLine = `${note.x},${note.y},${note.time},${note.someParamA},${note.someParamB},0:0:0:0:`;
+            long++;
         } else {
             // is a chip
             convertedLine = `${note.x},${note.y},${note.time},0,${note.endTime},${note.someParamA},${note.someParamB},0:0:0:0:`;
+            chip++;
         }
         raw_lines_to_write.push(convertedLine);
     });
@@ -191,5 +200,5 @@ export function ConvertToOsuChart(track_bt_a: Array<BT_Note>, track_bt_b: Array<
         line++;
     }
 
-    info('osuconverter', `Done! Wrote ${object_count} objects.`);
+    info('osuconverter', `Done! Wrote ${object_count} (${chip} chip and ${long} long) objects.`);
 }

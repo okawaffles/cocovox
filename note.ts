@@ -33,6 +33,7 @@ export interface BT_Note {
     Type: BT_NOTE_TYPE,
     State: BT_States,
     HoldBeats?: number
+    some_param_b: number
 }
 
 export interface VOL_Note {

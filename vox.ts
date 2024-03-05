@@ -249,12 +249,13 @@ export class Vox {
             const param_a: number = parseInt(line_parts[1]);
             const param_b: number = parseInt(line_parts[2]);
 
-            // 0 0 == BT CHIP
-            if (param_a == 0 && param_b == 0) {
+            // 0 = BT CHIP
+            if (param_a == 0) {
                 const note: BT_Note = {
                     Location: loc,
                     Type: trackId,
-                    State: BT_States.BT_STATE_CHIP
+                    State: BT_States.BT_STATE_CHIP,
+                    some_param_b: param_b
                 }
                 notes.push(note);
             } else {
@@ -264,7 +265,8 @@ export class Vox {
                     Location: loc,
                     Type: trackId,
                     State: BT_States.BT_STATE_HOLD,
-                    HoldBeats: beats
+                    HoldBeats: beats,
+                    some_param_b: param_b
                 }
                 notes.push(note);
             }

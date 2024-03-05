@@ -34,6 +34,37 @@ function ConvertVOXLocationToMS(location: I_SONG_LOCATION, bpm: I_BPM_INFO, time
     return MS;
 }
 
+function ConvertVOXLocationToMS_MultiBPM(location: I_SONG_LOCATION, BPMs: Array<I_BPM_INFO>, timesig: I_BEAT_INFO): number {
+    // in order to convert with multi bpm we need to go through every previous BPM
+    let MS: number = 0;
+    BPMs.forEach((bpm: I_BPM_INFO) => {
+        let MSPerBeat: number = 60000 / bpm.BPM;
+
+        if (BPMs.length-1 > BPMs.indexOf(bpm)) {
+            // these are the previous BPMs, so look ahead by one to find when the BPM ends
+            const nextLocation: I_SONG_LOCATION = BPMs[BPMs.indexOf(bpm) + 1].Location;
+            // get beats between to find how long it is in MS:
+            const MSFromMeasures: number = nextLocation.Measure - location.Measure;
+            let MSFromBeats: number;
+            if (nextLocation.Beats - location.Beats >= 0) {
+                MSFromBeats = nextLocation.Beats - location.Beats;
+            } else {
+                MSFromMeasures--;
+                MSFromBeats = (nextLocation.Beats + timesig.Numerator) - location.Beats;
+            }
+
+            MSFromMeasures = MSPerBeat*MSFromMeasures*timesig.Numerator;
+            MSFromBeats = MSPerBeat*MSFromBeats;
+
+            MS = MSFromMeasures + MSFromBeats;
+        } else {
+            // do later
+        }
+
+        return MS;
+    });
+}
+
 interface osumania_chip {
     x: number,
     y: number,

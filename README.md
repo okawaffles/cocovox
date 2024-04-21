@@ -7,3 +7,7 @@ In order to run:
 2. Run `node build/main.js <path to your .vox file>`
 
 These steps are subject to change so be prepared to read code to figure it out yourself if you need. 
+
+# NOTES (PLEASE READ)
+- Currently, this only supports single BPM + single timesig charts. Other charts **WILL NOT** BE TIMED PROPERLY.
+- You will need to change the signature at the top of the vox file (`// S**** V***** OUTPUT TEXT FILE`) to be the full phrase. Otherwise, the chart may not be read by S\*\*\*\* V\*\*\*\*\* correctly.
